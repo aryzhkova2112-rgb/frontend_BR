@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Алёна Рыжкова | Визажист и Стилист</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Подключение шрифтов (примерные аналоги оригинальных шрифтов) -->
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Playfair+Display:ital@0;1&family=Podkova&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- СЛАЙД 1: ГЛАВНЫЙ (БЕЗ ВОЛНЫ, ФОТО ДЕВУШКИ СЛЕВА) -->
+    <header class="header">
+        <nav class="nav">
+            <a href="#about-slide" class="nav-link">Обо мне</a>
+            <a href="#contacts-slide" class="nav-link">Контактные данные</a>
+            <a href="#price-slide" class="nav-link">Стоимость</a>
+        </nav>
+
+        <!-- ИСПРАВЛЕННЫЙ БЛОК: Интерактивный поиск -->
+        <div class="search-container">
+            <!-- Само поле ввода, изначально скрытое через CSS -->
+            <input type="text" class="search-input" placeholder="Поиск по сайту...">
+
+            <!-- Кнопка-лупа, которая открывает поиск -->
+            <button class="search-btn" id="searchBtn" aria-label="Открыть поиск">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+<!-- ПАНЕЛЬ УПРАВЛЕНИЯ -->
+<div id="adminPanel" class="admin-panel" style="display: none;">
+    <div class="admin-header">
+        <span id="userInfo"></span>
+        <button id="logoutBtn" class="logout-btn">Выйти</button>
+    </div>
+
+    <!-- УПРАВЛЕНИЕ ЦЕНАМИ (ТОЛЬКО ДЛЯ МЕНЕДЖЕРА) -->
+    <div id="priceControls">
+        <h3> Управление ценами на услуги</h3>
+        <div class="price-editor">
+            <label> Прическа:
+                <input type="number" id="editHairPrice" class="price-input" value="2500">
+            </label>
+            <label> Макияж:
+                <input type="number" id="editMakeupPrice" class="price-input" value="2000">
+            </label>
+            <button id="savePricesBtn" class="save-btn"> Сохранить</button>
+        </div>
+
+        <h3> Управление ценами на выезд</h3>
+        <div class="price-editor">
+            <label> Северодвинск:
+                <input type="number" id="editSeverodvinskPrice" class="price-input" value="1000">
+            </label>
+            <label> Архангельск:
+                <input type="number" id="editArkhangelskPrice" class="price-input" value="2000">
+            </label>
+            <label> Ранний выезд (до 8:00):
+                <input type="number" id="editEarlyPrice" class="price-input" value="1000">
+            </label>
+            <button id="saveVisitPricesBtn" class="save-btn"> Сохранить</button>
+        </div>
+    </div>
+
+    <!-- УПРАВЛЕНИЕ МЕДИА (ТОЛЬКО ДЛЯ АДМИНА) -->
+    <div id="mediaControls">
+        <h3> Управление видео (Клипы)</h3>
+        <div class="media-control-group">
+            <input type="text" id="newVideoUrl" placeholder="Путь к видео (например: work6.mp4)" class="media-input">
+            <button id="addVideoBtn" class="media-btn">+ Добавить видео</button>
+        </div>
+        <div id="videoList" class="media-list">
+            <h4> Список видео на сайте:</h4>
+        </div>
+
+        <h3> Управление фото (Портфолио)</h3>
+        <div class="media-control-group">
+            <input type="text" id="newPhotoUrl" placeholder="Путь к фото (например: portfolio6.png)" class="media-input">
+            <button id="addPhotoBtn" class="media-btn">+ Добавить фото</button>
+        </div>
+        <div id="photoList" class="media-list">
+            <h4> Список фото на сайте:</h4>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function() {
+
+        // Листание карусели клипов
+        const clipsCarousel = document.querySelector('.clips-carousel');
+        const clipsNextBtn = document.getElementById('nextClipBtn');
+        const clipsPrevBtn = document.getElementById('prevClipBtn');
+
+        if (clipsCarousel && clipsNextBtn && clipsPrevBtn) {
+            clipsNextBtn.addEventListener('click', function() {
+                const items = clipsCarousel.querySelectorAll('.clip-item');
+                if (items.length > 0) {
+                    clipsCarousel.appendChild(items[0]);
+                }
+            });
+
+            clipsPrevBtn.addEventListener('click', function() {
+                const items = clipsCarousel.querySelectorAll('.clip-item');
+                if (items.length > 0) {
+                    clipsCarousel.insertBefore(items[items.length - 1], items[0]);
+                }
+            });
+        }
+
+        // Листание карусели портфолио
+        const pCarousel = document.querySelector('.portfolio-carousel-lane');
+        const pNextBtn = document.getElementById('nextPortfolioBtn');
+        const pPrevBtn = document.getElementById('prevPortfolioBtn');
+
+        if (pCarousel && pNextBtn && pPrevBtn) {
+            pNextBtn.addEventListener('click', function() {
+                const pItems = pCarousel.querySelectorAll('.portfolio-carousel-item');
+                if (pItems.length > 0) {
+                    pCarousel.appendChild(pItems[0]);
+                }
+            });
+
+            pPrevBtn.addEventListener('click', function() {
+                const pItems = pCarousel.querySelectorAll('.portfolio-carousel-item');
+                if (pItems.length > 0) {
+                    pCarousel.insertBefore(pItems[pItems.length - 1], pItems[0]);
+                }
+            });
+        }
+
+        // Умный поиск
+        const searchContainer = document.querySelector('.search-container');
+        const searchBtn = document.getElementById('searchBtn');
+        const searchInput = document.querySelector('.search-input');
+
+        if (searchBtn && searchContainer && searchInput) {
+            searchBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                searchContainer.classList.toggle('active');
+                if (searchContainer.classList.contains('active')) {
+                    searchInput.focus();
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!searchContainer.contains(e.target)) {
+                    searchContainer.classList.remove('active');
+                }
+            });
+
+            function performSearch() {
+                const query = searchInput.value.toLowerCase().trim();
+                if (query === "") return;
+
+                let targetId = null;
+
+                if (query.includes("стоимост") || query.includes("цена") || query.includes("цены")) {
+                    targetId = "price-slide";
+                }
+                else if (query.includes("сертификат")) {
+                    targetId = "certificate-slide";
+                }
+                else if (query.includes("выезд")) {
+                    targetId = "visit-slide";
+                }
+                else if (query.includes("контакт") || query.includes("данные") || query.includes("телефон") || query.includes("соцсет") || query.includes("вк") || query.includes("vk")) {
+                    targetId = "contacts-slide";
+                }
+                else if (query.includes("обучен") || query.includes("урок")) {
+                    targetId = "education-slide";
+                }
+                else if (query.includes("место") || query.includes("карт") || query.includes("студи")) {
+                    targetId = "studio-slide";
+                }
+                else if (query.includes("портфолио") || query.includes("работ")) {
+                    targetId = "portfolio-slide";
+                }
+                else if (query.includes("отзыв")) {
+                    targetId = "reviews-slide";
+                }
+                else if (query.includes("клип")) {
+                    targetId = "clips-slide";
+                }
+
+                if (targetId) {
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        searchContainer.classList.remove('active');
+                        return;
+                    }
+                }
+
+                const allSections = document.querySelectorAll('section, main');
+                let matchedSection = null;
+
+                for (let i = 0; i < allSections.length; i++) {
+                    if (allSections[i].textContent.toLowerCase().includes(query)) {
+                        matchedSection = allSections[i];
+                        break;
+                    }
+                }
+
+                if (matchedSection) {
+                    matchedSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    searchContainer.classList.remove('active');
+                } else {
+                    searchInput.style.color = '#ff4d4d';
+                    setTimeout(() => { searchInput.style.color = ''; }, 1000);
+                }
+            }
+
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    performSearch();
+                }
+                if (e.key === "Escape") {
+                    searchInput.value = "";
+                    searchContainer.classList.remove('active');
+                }
+            });
+        }
+    });
+</script>
+
+
+
+
+    <main class="hero-section">
+        <!-- Левая часть: фото -->
+        <div class="hero-image-container">
+            <img src="https://psv4.userapi.com/s/v1/d2/Dy1A2aovEklsjSkbLsalmdeBchnXKxECSxhnYkxF0XmJ9faSnDin0iUnlcAdfiBQZ-WLZOGPdX5VWcqQaOD8NLdi1FORikA_eCzxsF3wxi_B5-VzM81JqDghoWY_jImmMEP3QZj2S1p4/photo.png" alt="Алёна Рыжкова" class="hero-image">
+        </div>
+
+        <!-- Правая часть: текст -->
+        <div class="hero-text-container">
+            <h1 class="hero-title">Алёна Рыжкова</h1>
+            <div class="hero-subtitle">
+                <p class="tag-pink">ВИЗАЖИСТ</p>
+                <p class="tag-outline">И СТИЛИСТ</p>
+                <p class="tag-outline">ПО ПРИЧЕСКАМ</p>
+            </div>
+        </div>
+    </main> <!-- Конец первого слайда -->
+
+
+    <!-- ========================================== -->
+    <!-- СЛАЙД 2: Опрос / Проблемы -->
+    <!-- ========================================== -->
+    <section class="survey-section">
+
+        <!-- Заголовок вопроса сверху -->
+        <div class="survey-header">
+            <span class="header-tag-pink">А У ТЕБЯ ТОЖЕ ТАК?</span>
+        </div>
+
+        <!-- Сетка с диалоговыми облачками (баблами) -->
+        <div class="bubbles-container">
+
+            <div class="bubble bubble-left">
+                УТРО ПЕРЕД СОБЫТИЕМ НАЧИНАЕТСЯ С ГОНКИ ПО ГОРОДУ?
+            </div>
+
+            <div class="bubble bubble-right">
+                УЖЕ В КРЕСЛЕ ДУМАЕШЬ НЕ О КРАСОТЕ, А О ТОМ, УСПЕЕШЬ ЛИ ВОВРЕМЯ?
+            </div>
+
+            <div class="bubble bubble-left">
+                К МОМЕНТУ, КОГДА ОБРАЗ ГОТОВ, ЧУСТВУЕШЬ УСТАЛОСТЬ, А НЕ РАДОСТЬ?
+            </div>
+
+            <div class="bubble bubble-right">
+                ХОЧЕШЬ НАУЧИТЬСЯ КАЖДОЕ УТРО САМА ДЕЛАТЬ СЕБЕ УКЛАДКУ ЗА 10 МИН?
+            </div>
+
+        </div>
+
+        <!-- Финальный призыв снизу -->
+        <div class="survey-footer">
+            <p>ЕСЛИ ХОТЬ РАЗ ОТВЕТИЛА “ДА” - ЗНАЧИТ<br>ТЫ НА НУЖНОМ САЙТЕ</p>
+        </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- СЛАЙД 3: Обо мне / Принципы -->
+    <!-- ========================================== -->
+    <section class="about-section" id="about-slide">
+        <!-- Розовая текстурная плашка по центру -->
+        <div class="paper-card">
+
+            <div class="about-text-block">
+                <p class="about-intro">МЕНЯ ЗОВУТ АЛЁНА,<br>Я - СТИЛИСТ ПО ПРИЧЕСКАМ И ВИЗАЖИСТ</p>
+
+                <p class="about-principle">МОЙ ПРИНЦИП РАБОТЫ - ПРИЧЕСКА И МАКИЯЖ<br>ДОЛЖНЫ БЫТЬ НЕ ТОЛЬКО<br>КРАСИВЫМИ, НО И СТОЙКИМИ!</p>
+
+                <ul class="about-list">
+                    <li>- СВАДЕБНЫЕ ОБРАЗЫ</li>
+                    <li>- ВЕЧЕРНИЕ ОБРАЗЫ</li>
+                    <li>- ОБУЧЕНИЕ «УКЛАДКИ ДЛЯ СЕБЯ»</li>
+                </ul>
+
+                <p class="about-highlight">ПОЛНЫЙ ОБРАЗ ВСЕГО<br>ЗА 2 ЧАСА</p>
+
+                <p class="about-mission">МОЯ РАБОТА - ЭТО СОЗДАВАТЬ КРАСОТУ, ХОРОШЕЕ<br>НАСТРОЕНИЕ И УВЕРЕННОСТЬ В СЕБЕ<br>ДЛЯ КАЖДОГО КЛИЕНТА</p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- СЛАЙД 4: Галерея / Категории (ИСПРАВЛЕННЫЙ) -->
+    <!-- ========================================== -->
+        <!-- СЛАЙД 4: ГАЛЕРЕЯ-НАВИГАЦИЯ (НАСТРОЕНЫ ССЫЛКИ ДЛЯ ПЕРЕХОДОВ) -->
+    <section class="gallery-section" id="gallery-slide">
+
+        <div class="gallery-grid">
+
+            <!-- Карточка КЛИПЫ (ведет на слайд с каруселью клипов) -->
+            <a href="#clips-slide" class="gallery-item item-clips">
+                <img src="https://psv4.userapi.com/s/v1/d2/mhkamHrcsu0ux_YZdNnDbgG2fucgyT3cM6KzmL63c1rHBYxdwsQof4M7GSEpo7-NKcq-atHOnQFvfn1Pk8tptbhoFJXP9YgMwMWjC28IVtlhcxyBOS3BT7Q_Tc6M4meZI-ZL7mQgSyDT/img-clips.png" alt="Клипы">
+                <span class="item-title">КЛИПЫ</span>
+            </a>
+
+            <!-- Карточка ОБУЧЕНИЕ (ведет на 8 слайд с обучением) -->
+            <a href="#education-slide" class="gallery-item item-education">
+                <img src="https://psv4.userapi.com/s/v1/d2/xhL_HAptMUxoMAmekmU3CbaS_oRNPFjqMU6IPPS_YlqDoV5MU_i8elgA167409anh6_vQGpoG8fqb2f2iIGKPqC_DjzSHyK61g2zZm52ILDKV2-aH8mpi6nLvXZQHpDg0Rzhdhcvvd3T/img-education.png" alt="Обучение">
+
+                <span class="item-title">ОБУЧЕНИЕ</span>
+            </a>
+
+            <!-- Карточка РАБОТЫ (ведет на слайд с портфолио-каруселью) -->
+            <a href="#portfolio-slide" class="gallery-item item-portfolio">
+                <img src="https://psv4.userapi.com/s/v1/d2/OlUG91ujzNqDbFquMhnOR6u_5tQn568ip6rTTrd-QOCgmlvoA6qNgelX_ugX4TdZEuAus2-6-waCVe-MRpmc6UYwOevUYo7kNYKbOWCQ7OeercgJjCTo6Epix-_Cj1evSgcO4y5zi9ks/img-portfolio.png" alt="Работы">
+
+                <span class="item-title">РАБОТЫ</span>
+            </a>
+
+            <!-- Карточка СЕРТИФИКАТ (ведет на слайд с сертификатами, если он есть) -->
+            <a href="#certificate-slide" class="gallery-item item-certificate">
+                <img src="https://psv4.userapi.com/s/v1/d2/-4sl8FfYTSD0MPmzgRjmPgvH3TweX32fBatPLllpTpEZym9wD2kCURMWK1nRED8q4OlRr7GKAzhIlyC7zdp7wiaZx2_8xjmakcKXQNwqSHdnGQWpGavHCHqDGnwN62rN7X576q2sfeSq/img-certificate.png" alt="Сертификат">
+
+                <span class="item-title">СЕРТИФИКАТ</span>
+            </a>
+
+            <!-- Карточка ОТЗЫВЫ (ведет на слайд с 5 картинками отзывов) -->
+            <a href="#reviews-slide" class="gallery-item item-reviews">
+                <img src="https://psv4.userapi.com/s/v1/d2/me88PG1Jc2xkZFi_hUVbJYj9kQNuzLHYhJxDv2wAimxmir3TXG5IUM6xSs1qQLRb5NTaS2YpLaOHOlUYrGJAzTx2qCCepo2KN_DMm_sWg7SCU3qsnItnUlSP_kPBnGFFp_uNrI19fBDY/img-reviews.png" alt="Отзывы">
+
+                <span class="item-title">ОТЗЫВЫ</span>
+            </a>
+
+            <!-- Карточка КАРТА (ведет на последний 13 слайд со студией и картой) -->
+            <a href="#studio-slide" class="gallery-item item-map">
+                <img src="https://psv4.userapi.com/s/v1/d2/Q7_fRn5WpmiNWp8nzPZim76ZfUk98iTWguFeeSeR9VnzxCmhY6HMCPKb-Z6wr1jvO-4OZFa_Y2Da2A8__F5lSgDWgiH__6xEmAXUhn4l66cHqW-sNEGU5_ojYeGy9VugYBXLCfPC8s8p/img-map.png" alt="Карта">
+
+                <span class="item-title">КАРТА</span>
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- СЛАЙД 5: Стоимость -->
+    <!-- ========================================== -->
+    <section class="price-section" id="price-slide">
+
+        <!-- Верхняя плашка-заголовок -->
+        <div class="price-header">
+            <span class="price-title-tag">СТОИМОСТЬ</span>
+        </div>
+
+        <!-- Контейнер для карточек услуг -->
+        <div class="price-container">
+
+            <!-- Блок 1: Прическа -->
+            <div class="price-card-row">
+                <div class="price-card-info">
+                    <h3 class="service-name">ПРИЧЕСКА</h3>
+                    <div class="service-cost-line">
+                        <span class="label">СТОИМОСТЬ</span>
+                        <span class="value" id="hairPrice">2500 РУБ</span>
+                    </div>
+                </div>
+                <!-- Фото прически с наклоном -->
+                <div class="price-card-img img-hair">
+                    <img src="https://psv4.userapi.com/s/v1/d2/hTrvkWKRMa7E1iRCDzOgEHiYk3pPSZ70pF9O8oTKoDHEuJ6B_OIwmQoZ8T1vaS7_L7siMC3XH006yjo0H5qz9gTZxJKqwxWeAq9kTx33KOutCzsw25Hw5S-HNf2GYQe7-jNlbfNKu0qf/hair.png" alt="Прическа">
+
+                </div>
+            </div>
+
+            <!-- Блок 2: Макияж -->
+            <div class="price-card-row">
+                <div class="price-card-info">
+                    <h3 class="service-name">МАКИЯЖ</h3>
+                    <div class="service-cost-line">
+                        <span class="label">СТОИМОСТЬ</span>
+                        <span class="value" id="makeupPrice">2000 РУБ</span>
+                    </div>
+                </div>
+                <!-- Фото макияжа с наклоном -->
+
+                <div class="price-card-img img-makeup">
+                    <img src="https://psv4.userapi.com/s/v1/d2/1ycq7zhVACOz5gwHqo0oyoU102ynXKNnZ2qQPYU8Bm-fNikXDPBjrn1b-mKunxVbn5sHs5WA5thf75p0XEy8mcBWG8KGeBiuzEDl1_g65sosOOa99-QAJ7Nk554auTd_nKqWlPgi0K2t/makeup.png" alt="Макияж">
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Нижний поясняющий текст -->
+        <div class="price-footer">
+            <p>ЕДИНАЯ СТОИМОСТЬ НА ЛЮБОЙ ОБРАЗ</p>
+            <p>У МЕНЯ НЕТ РАЗДЕЛЕНИЯ НА ДНЕВНОЙ, ВЕЧЕРНИЙ, ПРОБНЫЙ, СВАДЕБНЫЙ</p>
+        </div>
+
+    <!-- ========================================== -->
+    <!-- СЛАЙД 6: Выезд и Ранний выход (КОПИЯ ФОТО) -->
+    <!-- ========================================== -->
+    <section class="delivery-section" id="visit-slide">
+
+        <!-- Верхняя зона:  заголовок -->
+        <div class="delivery-header-layout">
+            <h2 class="delivery-main-title">ВЫЕЗД</h2>
+        </div>
+
+        <!-- Сетка с карточками стоимости -->
+        <div class="delivery-grid-layout">
+
+            <!-- Левая колонка (Две горизонтальные карточки) -->
+            <div class="delivery-left-column">
+
+                <!-- Северодвинск -->
+                <div class="city-card">
+                    <h3 class="city-name-title">СЕВЕРОДВИНСК</h3>
+                    <div class="city-price-info">
+                        <span class="price-label-text">СТОИМОСТЬ</span>
+                        <span class="price-value-text" id="severodvinskPrice">1000 РУБ</span>
+                    </div>
+                </div>
+
+                <!-- Архангельск -->
+                <div class="city-card">
+                    <h3 class="city-name-title">АРХАНГЕЛЬСК</h3>
+                    <div class="city-price-info">
+                        <span class="price-label-text">СТОИМОСТЬ</span>
+                        <span class="price-value-text" id="arkhangelskPrice">2000 РУБ</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Правая колонка (Высокая карточка) -->
+            <div class="early-card-wrapper">
+
+
+                <!-- Тело карточки -->
+                <div class="early-card-body">
+                    <h3 class="early-main-heading">РАННИЙ<br>ВЫХОД</h3>
+
+                    <p class="early-time-badge">ДО 8:00</p>
+
+                    <p class="early-price-label">СТОИМОСТЬ</p>
+
+                    <p class="early-price-value" id="earlyPrice">1000 РУБ</p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- СЛАЙД 7: Контакты / Вопросы -->
+    <!-- ========================================== -->
+    <section class="contacts-section" id="contacts-slide">
+        <!-- Заголовок и вводный текст -->
+        <header class="contacts-header">
+            <h2 class="contacts-title">ЕСТЬ ВОПРОСЫ?</h2>
+            <p class="contacts-desc">
+                ЕСЛИ ВЫ НЕ НАШЛИ НУЖНУЮ ИНФОРМАЦИЮ<br>
+                ИЛИ СОМНЕВАЕТЕСЬ В ДЕТАЛЯХ
+            </p>
+            <p class="contacts-accent-call">ПРОСТО НАПИШИТЕ</p>
+            <p class="contacts-desc">МЫ РАЗБЕРЕМ ВАШ СЛУЧАЙ ИНДИВИДУАЛЬНО</p>
+        </header>
+
+        <!-- Блок со ссылками и контактами -->
+        <div class="contacts-container">
+
+            <!-- Ссылка на ВКонтакте -->
+            <a href="https://vk.com/alena.ryzh_hairstylist" target="_blank" class="contact-item">
+                <div class="contact-icon-box">
+                    <!-- Защищенная SVG иконка VK -->
+                    <svg viewBox="0 0 24 24" class="contact-svg">
+                        <path d="M15.02 3h-6.04C5.4 3 3 5.4 3 8.98v6.04C3 18.6 5.4 21 8.98 21h6.04c3.58 0 5.98-2.4 5.98-5.98V8.98C21 5.4 18.6 3 15.02 3zm3.17 11.7c.1.3-.06.56-.47.56h-1.57c-.35 0-.5-.18-.6-.39 0 0-.8-1.95-1.93-3.22-.37-.37-.53-.5-.74-.5-.1 0-.25.13-.25.5v2.66c0 .35-.1.5-.42.5-1.07 0-3.32-.4-4.74-2.43C7.47 10.3 5.8 7.37 5.8 7.37c-.12-.22 0-.37.33-.37h1.58c.28 0 .4.12.48.33 0 0 1.23 2.87 2.78 4.1.5.5.72.65.99.65.14 0 .34-.15.34-.58V9.1c0-.36-.1-.51-.43-.51h-.76c-.12 0-.08-.2.13-.35.34-.23.95-.44 1.86-.44 1.17 0 1.4.38 1.4 1.27v2.44c0 .54.1.73.3.73.3 0 .76-.14 1.76-1.15.8-1 1.17-2.9 1.17-2.9.06-.2.2-.33.5-.33h1.58c.4 0 .5.22.4.55-.37 1.63-2.07 4.14-2.12 4.22-.24.34-.25.5-.03.7 0 0 1.6 1.5 2.13 2.5z"/>
+                    </svg>
+                </div>
+                <div class="contact-text">
+                    <span class="contact-label">ВКонтакте</span>
+                    <span class="contact-value highlight-vk">АЛЁНА РЫЖКОВА<br>ПРИЧЁСКИ СЕВЕРОДВИНСК</span>
+                </div>
+            </a>
+
+            <!-- Телефон -->
+            <a href="tel:+79600120779" class="contact-item">
+                <div class="contact-icon-box">
+                    <!-- Защищенная SVG иконка Телефона -->
+                    <svg viewBox="0 0 24 24" class="contact-svg">
+                        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                    </svg>
+                </div>
+                <div class="contact-text">
+                    <span class="contact-label">Телефон</span>
+                    <span class="contact-value">8 (960) 012-07-79</span>
+                </div>
+            </a>
+
+        </div>
+    </section>
+
+        <!-- ========================================== -->
+    <!-- СЛАЙД: Обучение для себя -->
+    <!-- ========================================== -->
+    <section class="education-section" id="education-slide">        <!-- Главный заголовок слайда с декоративным подчеркиванием -->
+        <h2 class="education-title">
+            ОБУЧЕНИЕ ДЛЯ СЕБЯ
+            <span class="title-underline"></span>
+        </h2>
+
+        <!-- Главный контейнер -->
+        <div class="education-container">
+
+            <!-- Левая часть: Пункты и первая пара картинок -->
+            <div class="education-left">
+                <div class="education-info">
+                    <h3 class="info-heading">НА УРОКЕ РАБЕРЕМ:</h3>
+                    <ul class="info-list">
+                        <li>
+                            <span class="heart-bullet">♥</span>
+                            <span class="list-text">ПОДБЕРЕМ УДОБНЫЙ ИНСТРУМЕНТ ДЛЯ НАКРУТКИ</span>
+                        </li>
+                        <li>
+                            <span class="heart-bullet">♥</span>
+                            <span class="list-text">НАУЧИМСЯ ДЕЛАТЬ ОБЪЁМ НА ФЕН И ДАЖЕ БЕЗ</span>
+                        </li>
+                        <li>
+                            <span class="heart-bullet">♥</span>
+                            <span class="list-text">РАЗБЕРЁМ ТЕХНИКУ НАКРУТКИ</span>
+                        </li>
+                        <li>
+                            <span class="heart-bullet">♥</span>
+                            <span class="list-text">ПОДБЕРЕМ И ИЗУЧИМ СТАЙЛИНГ</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Блок первой работы (Брюнетка) -->
+                <div class="work-pair pair-one">
+                    <!-- Надпись "до" над картинкой -->
+                    <div class="handwritten-label label-before-one">до</div>
+
+                    <div class="images-row">
+                        <div class="img-box img-before">
+                            <img src="https://psv4.userapi.com/s/v1/d2/7ob0F2kRZH3rLzpLsED_VbQMyGOtdf3Djcck25q5bwHB6xq_l_ERY9sk3kqNrmrcGAOFKTHo6YBmwvVpqvOJQWc7uY1YUYaGnc4dEadFKh40CbxZ7lbI6xLU78MjtYN4qNQEdNilCvHw/blonde-before.png" alt="До">
+
+                        </div>
+                        <div class="img-box img-after">
+                            <img src="https://psv4.userapi.com/s/v1/d2/4zTSsZfccoOVG_pNxVSEfb0Qo14tX1tWDEdaT_C3Tbv6sbgL1FDYbsLIlcJsQcknmQxBl74V5h28V0YCj9HqKhzm9giCY9gTnTGwq3v3wxJuIt96P2vFh-GXU2HZ0f8BCW-ik2SPoQvL/brunette-before.png" alt="До 2">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Правая часть: Вторая пара картинок и футер -->
+            <div class="education-right">
+
+                <div class="work-pair pair-two">
+                    <div class="images-row">
+                        <div class="img-box img-before-two">
+                            <img src="https://psv4.userapi.com/s/v1/d2/sI-COM8QPQoFuIqwQ5xLFiaVq7_MVzuhRFqIKMGmmnUVOJaB0spTi7IUeKwaZjPLVQ0aVi54GubJl1aLnyBgwKK0vuiSNg9i-NeoUeGSpXtBseUMXOh7tyVJNM2SKshvI8ZWxhwI2vKV/blonde-after.png" alt="После 2">
+
+                        </div>
+                        <div class="img-box img-after-two">
+                            <img src="https://psv4.userapi.com/s/v1/d2/1HIaHqRPNDG6IDseDuUWS5vNBUfPV-tsje9nbw_S_r9h4u-pshJZSJYLMFxjJ8tSBl8nvMUgXtrL1yOaVgjHyG0k5DNx-a2yfthjbM2GJpZii0zTmV3nIwogCNiUdTD9ysAdvCjWC-ya/brunette-after.png" alt="После">
+                        </div>
+                    </div>
+
+                    <!-- Надпись "после" под картинкой -->
+                    <div class="handwritten-label label-after-two">после</div>
+                </div>
+
+                <!-- Информация о длительности (справа внизу) -->
+                <footer class="education-footer">
+                    <p>ПРОДОЛЖИТЕЛЬНОСТЬ 1 УРОКА ~ 2 ЧАСА</p>
+                    <p>ВСЕ МАТЕРИАЛЫ ПРЕДОСТАВЛЯЮТСЯ</p>
+                </footer>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- СЛАЙД: Подарочный сертификат               -->
+    <!-- ========================================== -->
+    <section class="certificate-section" id="certificate-slide">
+
+        <!-- Сетка контента (Текст слева, фото справа) -->
+        <div class="certificate-grid">
+
+            <!-- Левая колонка с описанием -->
+            <div class="certificate-text-block">
+
+                <h2 class="certificate-main-title">ИДЕАЛЬНЫЙ ПОДАРОК НАЙДЕН!</h2>
+
+                <p class="certificate-paragraph">
+                    <span class="pink-bold">ПОДАРОЧНЫЙ СЕРТИФИКАТ НА ЛЮБУЮ УСЛУГУ</span>
+                    — ЭТО ЗАБОТА, КРАСОТА И УВЕРЕННОСТЬ В СЕБЕ
+                </p>
+
+                <p class="certificate-paragraph">
+                    ОН ПОДХОДИТ ДЛЯ ЛЮБОГО ПОВОДА
+                </p>
+
+                <p class="certificate-paragraph">
+                    <span class="pink-regular">НОМИНАЛ ВЫБИРАЕТЕ ВЫ</span>, А СТИЛЬНОЕ
+                    ОФОРМЛЕНИЕ ДОБАВЛЯЕТ ИЗЮМИНКУ
+                </p>
+
+                <p class="certificate-paragraph font-spacing">
+                    ДАРИТЕ ЭМОЦИИ И ПРЕОБРАЖЕНИЕ!
+                </p>
+
+            </div>
+
+            <!-- Правая колонка с изображением рук и конверта -->
+            <div class="certificate-image-block">
+                <img src="https://psv4.userapi.com/s/v1/d2/_N9iAlOV6hyq3DSTP1A2b36zYjk8SXyTsA4mpnzrmw74NreVQp3-FL4Pw1jv5uDWJtGDpQvTd4WpwdVaSn-3urlQ1Nzb9YzjfaPPkhdu7HYXVgmtp3m95IA09xvWvH80b5gPWvZNaYLS/cert-mockup.png" alt="Подарочный сертификат" class="cert-main-img">
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- СЛАЙД: Портфолио / Работы -->
+    <!-- ========================================== -->
+    <section class="portfolio-carousel-section" id="portfolio-slide">
+    <!-- Окно видимости для трех фотографий -->
+    <div class="portfolio-container-window">
+        <div class="portfolio-carousel-lane" id="portfolioCarousel">
+        </div>
+    </div>
+
+    <!-- Нижняя панель управления: Стрелки и надпись -->
+    <div class="portfolio-bottom-panel">
+        <div class="portfolio-controls-row">
+            <button class="portfolio-arrow arrow-left" id="prevPortfolioBtn">⟵</button>
+            <h2 class="portfolio-heading">ПОРТФОЛИО</h2>
+            <button class="portfolio-arrow arrow-right" id="nextPortfolioBtn">⟶</button>
+        </div>
+    </div>
+</section>
+
+
+    <!-- ========================================== -->
+    <!-- СЛАЙД: Отзывы                              -->
+        <!-- СЛАЙД: ОТЗЫВЫ (ГОТОВЫЙ КОД ПОД РЕАЛЬНЫЕ ФОТОГРАФИИ) -->
+    <section class="reviews-section" id="reviews-slide">
+        <div class="reviews-title-wrapper">
+            <h2 class="reviews-main-title">ОТЗЫВЫ</h2>
+        </div>
+        <div class="reviews-masonry-grid" id="reviewsContainer">
+            <div class="reviews-col col-left">
+                <div class="review-box item-2 short-box">
+                    <img src="https://psv4.userapi.com/s/v1/d2/PGrJvbYBdyChIsLlA6ZyP9PdikI9TRG52kua9o_2op_J7yG7xfFWg3aVtg_N85IbfFsp7E7_VpwYMcwz7MykZ7wtK2W_sG154wShacmdDbnqLFlO456WxIZTTOVRweeYgBY7HaOb8Iet/review2.png" alt="Отзыв" class="review-img">
+                </div>
+            </div>
+            <div class="reviews-col col-center">
+                <div class="review-box item-3 medium-box">
+                    <img src="https://psv4.userapi.com/s/v1/d2/jSP1gEUquqRFml2vyYxwHYCTz5Im_L9AjHfcSnumGzGt3-UB2uqY_q7mx7I0Q3if_jy5h2Y2JLHAsT9vW_YvAiikwumMubRXiHnDMAWsa0bm3KuOax3XjY-Yfa_cO1PhdYP9U6XamH1A/review3.png" alt="Отзыв" class="review-img">
+                </div>
+            </div>
+            <div class="reviews-col col-right">
+                <div class="review-box item-5 medium-box">
+                    <img src="https://psv4.userapi.com/s/v1/d2/erz7sMjPPo-mow6LKNZPKsyW4cRiM7y6XcJ_I0sK-rP8hSL0pZcW1U_H97tHZkMeaL9Nh3h1smTAoprRDcBHs1NbUF58PEoHLIDKCrIgV9wM4Bejp1Z8zmr7DN6d2gnVzVHiKilFnej6/review5.png" alt="Отзыв" class="review-img">
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- ========================================== -->
+    <!-- СЛАЙД: Клипы (Интерактивная карусель)      -->
+    <!-- ========================================== -->
+    <section class="clips-section" id="clips-slide">
+        <!-- Окно видимости для трех клипов -->
+        <div class="clips-container-window">
+            <div class="clips-carousel" id="clipsCarousel">
+            </div>
+        </div>
+
+        <!-- Нижняя панель: только стрелки и надпись КЛИПЫ -->
+        <div class="clips-bottom-panel">
+            <!-- Кнопки управления -->
+            <div class="clips-controls-row">
+                <button class="clip-arrow arrow-left" id="prevClipBtn">⟵</button>
+                <h2 class="clips-heading">КЛИПЫ</h2>
+                <button class="clip-arrow arrow-right" id="nextClipBtn">⟶</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- СЛАЙД: Моя студия / Карта                  -->
+    <!-- ========================================== -->
+    <!-- СЛАЙД 13: СТУДИЯ И КАРТА (КЛИКАБЕЛЬНЫЙ КВАДРАТ И ПОДНЯТАЯ ЛИНИЯ) -->
+    <section class="slide-13" id="studio-slide">
+        <header class="slide-header">
+            <h1 class="main-title">МОЯ СТУДИЯ!</h1>
+            <p class="subtitle">БЕЛОМОРСКИЙ ПР-Т 3, СЕВЕРОДВИНСК</p>
+        </header>
+
+        <div class="content-container">
+            <div class="info-block">
+                <p class="desc-text">
+                    А ЕСЛИ ВАМ УДОБНЕЕ ОСТАТЬСЯ ДОМА ИЛИ В ОФИСЕ, У НАС ЕСТЬ УСЛУГА ВЫЕЗДА МАСТЕРА
+                </p>
+                <div class="accent-box">
+                    <p class="accent-text">
+                        <span class="highlight">ОБРАТИТЕ ВНИМАНИЕ:</span><br>
+                        ВЫЕЗД ОПЛАЧИВАЕТСЯ ДОПОЛНИТЕЛЬНО
+                    </p>
+                </div>
+            </div>
+
+            <!-- ИСПРАВЛЕННЫЙ БЛОК: Ссылка-квадрат, ведущая на Google Карты -->
+            <div class="map-block">
+                <!-- Ссылка ведет на точный адрес вашей студии на Google Картах -->
+                <a href="https://yandex.ru/maps/10849/severodvinsk/house/belomorskiy_prospekt_3/Z0AYfgNiSU0PQFhufXl2c3RhYg==/?ll=39.842088%2C64.572826&z=16.9" target="_blank" class="studio-map-link">
+                    <div class="map-wrapper">
+                        <!-- Сейчас это красивый текст по центру квадрата. -->
+                        <img src="https://psv4.userapi.com/s/v1/d2/5o-_0PGjCSPlF722anMId90oTIt9i-G312GimYAyUSUub-GRUcJebpr-8IYvT8ntY0pR17aE1L4IIVnYbuz2ykvpPF4PCizDGjkbU2kNonw_OFqkRpmquIRNQ2JuEiQinRaNQrO5KfMc/map.png" alt="Карта">
+
+                    </div>
+                </a>
+            </div>
+
+        </div>
+
+        <footer class="slide-footer">
+            <p class="footer-text">
+                САЙТ СОЗДАН СТУДЕНТАМИ 2 КУРСА САФУ<br>
+                РЫЖКОВА АРИНА НИКОЛАЕВНА ГРУППА 151415<br>
+                БАЖЕНОВА АЛЁНА СЕРГЕЕВНА ГРУППА 151415
+            </p>
+        </footer>
+    </section>
+
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="admin.js"></script>
+<script src="api.js"></script>
+
+
+</body>
+</html>
+
+
+

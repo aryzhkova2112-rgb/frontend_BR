@@ -1,0 +1,2742 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px 0; /* Убираем боковой паддинг */
+    position: absolute;
+    width: 100%;
+    max-width: 900px; /* Жесткие границы */
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%); /* Центрирование шапки */
+    z-index: 10;
+}
+
+/* ========================================== */
+/* БЕЗОПАСНАЯ НАСТРОЙКА ВЫСОТЫ ДЛЯ ВСЕХ СЛАЙДОВ */
+/* ========================================== */
+.hero-section,
+.survey-section,
+.about-section,
+.gallery-section,
+.price-section,
+.delivery-section {
+    /* ЗАМЕНЯЕМ ЖЕСТКИЙ height НА МИНИМАЛЬНУЮ ВЫСОТУ */
+    min-height: 100vh;
+
+    /* УДАЛЯЕМ ОГРАНИЧЕНИЯ (ЕСЛИ ОНИ БЫЛИ) */
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+
+    /* ОСТАЛЬНЫЕ СТИЛИ ОСТАЮТСЯ */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around; /* Мягко распределяет отступы */
+    align-items: center;
+    padding: 60px 8%;
+    box-sizing: border-box;
+    position: relative;
+}
+
+/* КОРРЕКТИРОВКА ДЛЯ ВСЕХ СЛАЙДОВ: Фиксируем в экран */
+.hero-section,
+.survey-section,
+.about-section,
+.gallery-section,
+.price-section,
+.delivery-section {
+    height: 100vh; /* Идеально ровно 1 экран в высоту */
+    max-height: 100vh;
+    min-height: 100vh;
+    overflow: hidden; /* Запрещаем внутреннюю прокрутку */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Распределяет элементы по краям экрана */
+    align-items: center;
+    padding: 40px 8%; /* Слегка уменьшили вертикальные отступы */
+    box-sizing: border-box;
+}
+
+/* Уменьшаем размеры внутренних элементов, чтобы они гарантированно влезали */
+.bubbles-container { gap: 15px; } /* Слайд 2 */
+.about-text-block { gap: 20px; } /* Слайд 3 */
+.price-container { gap: 30px; } /* Слайд 5 */
+.gallery-grid { grid-template-rows: 120px 120px 180px; gap: 20px; } /* Слайд 4 */
+
+/* Базовые сбросы стилей */
+* {
+    margin: 0;
+    padding: 0;
+    box-box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #FFFDF9; /* Легкий кремовый оттенок фона */
+    color: #000;
+    overflow-x: hidden;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Шапка сайта */
+/* Включаем плавную прокрутку для всего сайта */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Контейнер навигации */
+.nav {
+    display: flex;
+    gap: 50px; /* Увеличено расстояние между словами (было 20px/40px) */
+}
+
+/* Стили ссылок в шапке */
+.nav-link {
+    text-decoration: none !important; /* ПОЛНОСТЬЮ УБИРАЕТ ПОДЧЁРКИВАНИЕ */
+    color: #1a1a1a !important;        /* Фиксируем аккуратный чёрный цвет букв */
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease;
+}
+
+/* Эффект при наведении курсора на ссылку */
+.nav-link:hover {
+    color: #E58BB1 !important;        /* Плавно окрашивается в ваш фирменный розовый */
+    opacity: 1;
+}
+/* ==========================================================================
+   ИНТЕРАКТИВНАЯ ПОИСКОВАЯ СТРОКА В ШАПКЕ
+   ========================================================================== */
+.search-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    background-color: transparent;
+    border-radius: 30px;
+    padding: 3px;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Стилизация строки ввода (изначально ширина 0 — она невидима) */
+.search-input {
+    width: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: #1a1a1a;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    opacity: 0;
+}
+
+/* Кнопка-лупа */
+.search-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 50%;
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.search-btn:hover {
+    color: #E58BB1; /* При наведении красим лупу в розовый */
+}
+
+/* ==========================================================================
+   СОСТОЯНИЕ ОТКРЫТОГО ПОИСКА (АКТИВИРУЕТСЯ ЧЕРЕЗ JAVASCRIPT)
+   ========================================================================== */
+.search-container.active {
+    background-color: #ffffff; /* Белая подложка для открытой строки */
+    border: 1px solid #f2cfdf;  /* Тонкая нежная розовая рамка */
+    box-shadow: 0 4px 15px rgba(229, 139, 177, 0.08);
+}
+
+.search-container.active .search-input {
+    width: 200px;              /* Ширина строки, когда она выезжает */
+    padding: 0 10px 0 15px;    /* Комфортные внутренние отступы для текста */
+    opacity: 1;                /* Делаем текст видимым */
+}
+
+.search-container.active .search-btn {
+    color: #E58BB1;            /* В открытом состоянии лупа остается розовой */
+}
+
+
+/* ==========================================================================
+   ИСПРАВЛЕННЫЙ ПЕРВЫЙ СЛАЙД (ПРАВИЛЬНЫЕ ШРИФТЫ И ФИРМЕННЫЙ РОЗОВЫЙ ЦВЕТ)
+   ========================================================================= */
+.hero-section {
+    display: flex;
+    flex-direction: row; /* Фото слева, текст справа */
+    align-items: center; /* Центрируем по вертикали относительно экрана */
+    justify-content: space-between;
+    min-height: 100vh;
+    padding: 120px 8% 50px 8%;
+    position: relative;
+}
+
+/* Контейнер для фото (Слева) */
+.hero-image-container {
+    width: 45%;
+    display: flex;
+    justify-content: flex-start;
+    z-index: 2;
+}
+
+.hero-image {
+    width: auto;
+    max-width: 100%;
+    max-height: 75vh;
+    display: block;
+    object-fit: contain;
+}
+
+/* Контейнер для текста (Справа) */
+.hero-text-container {
+    width: 50%;
+    padding-bottom: 0;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Выравнивание всего текста по левому краю */
+    z-index: 2;
+}
+
+/* Имя (Элегантный шрифт с засечками из макета) */
+.hero-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 72px;
+    font-weight: 400;
+    color: #E58BB1; /* Возвращен фирменный нежно-розовый оттенок */
+    margin-bottom: 30px;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+
+/* Профессия (Шрифт Podkova из макета) */
+.hero-subtitle {
+    font-family: 'Podkova', serif;
+    font-size: 44px; /* Оптимальный крупный размер */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+    line-height: 1.3;
+}
+
+/* Полное удаление овалов и рамок, но СОХРАНЕНИЕ розового цвета букв */
+.tag-pink, .tag-outline {
+    color: #E58BB1 !important; /* Текст гарантированно становится розовым */
+    font-family: 'Podkova', serif !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+}
+
+/* Полное скрытие фоновой розовой SVG-волны */
+.bg-wave {
+    display: none !important;
+}
+
+
+/* ========================================== */
+/* СТИЛИ ДЛЯ ВТОРОГО СЛАЙДА */
+/* ========================================== */
+
+.survey-section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 60px 10%;
+    background-color: #FFFDF9;
+    position: relative;
+}
+
+/* Верхний тег-заголовок */
+.survey-header {
+    margin-bottom: 40px;
+}
+
+.header-tag-pink {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 24px;
+    font-weight: 400;
+    color: #000;
+    border: 2px solid #E58BB1;
+    padding: 10px 40px;
+    border-radius: 50px;
+    letter-spacing: 1px;
+}
+
+/* Контейнер для облачков текста */
+.bubbles-container {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    flex-grow: 1;
+    justify-content: center;
+}
+
+/* Общие стили баблов (плашек текста) */
+.bubble {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    line-height: 1.4;
+    color: #000;
+    background-color: #FBCADF; /* Нежно-розовый фон плашек */
+    padding: 20px 30px;
+    max-width: 550px;
+    letter-spacing: 0.5px;
+    position: relative;
+}
+
+/* Выравнивание плашек влево и вправо */
+.bubble-left {
+    align-self: flex-start;
+    text-align: left;
+    border-radius: 0px 20px 20px 20px; /* Скругление как у диалогового окна */
+}
+
+.bubble-right {
+    align-self: flex-end;
+    text-align: left;
+    border-radius: 20px 0px 20px 20px; /* Скругление в другую сторону */
+}
+
+/* Имитация маленького хвостика диалога (опционально для сходства с макетом) */
+.bubble-left::after {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 0;
+    width: 0;
+    height: 0;
+    border-top: 0px solid transparent;
+    border-right: 10px solid #FBCADF;
+    border-bottom: 15px solid transparent;
+}
+
+.bubble-right::after {
+    content: '';
+    position: absolute;
+    right: -10px;
+    top: 0;
+    width: 0;
+    height: 0;
+    border-top: 0px solid transparent;
+    border-left: 10px solid #FBCADF;
+    border-bottom: 15px solid transparent;
+}
+
+/* Нижний текст */
+.survey-footer {
+    margin-top: 50px;
+    text-align: center;
+}
+
+.survey-footer p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #000;
+    letter-spacing: 1px;
+}
+
+/* Адаптивность под мобильные экраны */
+@media (max-width: 768px) {
+    .survey-section {
+        padding: 40px 20px;
+    }
+
+    .header-tag-pink {
+        font-size: 18px;
+        padding: 8px 25px;
+    }
+
+    .bubbles-container {
+        gap: 20px;
+    }
+
+    .bubble {
+        font-size: 15px;
+        max-width: 90%;
+        padding: 15px 20px;
+    }
+
+    .bubble-left, .bubble-right {
+        align-self: center; /* На мобилке выстраиваем все по центру */
+        border-radius: 15px;
+    }
+
+    .bubble-left::after, .bubble-right::after {
+        display: none; /* Прячем хвостики на мобильных */
+    }
+
+    .survey-footer p {
+        font-size: 16px;
+    }
+}
+
+/* ========================================== */
+/* СТИЛИ ДЛЯ ТРЕТЬЕГО СЛАЙДА */
+/* ========================================== */
+
+.about-section {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 80px 5%;
+    background-color: #FFFDF9;
+}
+
+/* Центрированная розовая карточка */
+.paper-card {
+    width: 100%;
+    max-width: 950px;
+    background-color: #F7A3C4; /* Базовый розовый цвет, если картинка не загрузится */
+
+    padding: 80px 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05); /* Легкая тень для объема */
+}
+
+/* Блок с текстом внутри карточки */
+.about-text-block {
+    font-family: 'Montserrat', sans-serif;
+    color: #000;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 40px; /* Расстояние между абзацами */
+    width: 100%;
+    max-width: 750px;
+}
+
+/* Стилизация отдельных абзацев */
+.about-intro {
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: 1px;
+}
+
+.about-principle {
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: 1px;
+}
+
+.about-list {
+    list-style: none;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.6;
+    letter-spacing: 1px;
+    padding: 0;
+}
+
+.about-highlight {
+    font-size: 24px;
+    font-weight: 500; /* Чуть жирнее для акцента */
+    line-height: 1.4;
+    letter-spacing: 1px;
+}
+
+.about-mission {
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 1px;
+}
+
+/* Адаптивность для мобильных экранов */
+@media (max-width: 768px) {
+    .about-section {
+        padding: 40px 15px;
+    }
+
+    .paper-card {
+        padding: 50px 25px;
+        background-size: cover; /* На мобилке текстура растянется под контент */
+        border-radius: 10px; /* Запасной вариант скругления, если рваный край сожмется */
+    }
+
+    .about-text-block {
+        gap: 25px;
+    }
+
+    .about-intro,
+    .about-principle,
+    .about-highlight {
+        font-size: 16px;
+    }
+
+    .about-list,
+    .about-mission {
+        font-size: 15px;
+    }
+}
+
+/* ========================================== */
+/* ИСПРАВЛЕННЫЕ СТИЛИ ДЛЯ ЧЕТВЕРТОГО СЛАЙДА  */
+/* ========================================== */
+
+.gallery-section {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 8%;
+    background-color: #FFFDF9;
+}
+
+/* Строим 3-строчную и 3-колоночную жесткую сетку */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 1fr; /* Пропорции колонок (боковые чуть уже центра) */
+    grid-template-rows: 150px 150px 220px; /* Высота для каждой из 3-х строк макета */
+    gap: 25px; /* Фиксированный отступ между карточками */
+    width: 100%;
+    max-width: 1100px;
+}
+
+/* Общие правила для карточек */
+.gallery-item {
+    text-decoration: none !important;
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%; /* Карточка полностью заполняет выделенную ей Grid-ячейку */
+    border-radius: 18px;
+    overflow: hidden;
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gallery-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(229, 139, 177, 0.2);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.item-title {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: #E58BB1;
+    letter-spacing: 1px;
+}
+
+/* ========================================== */
+/* ТОЧНОЕ ПОЗИЦИОНИРОВАНИЕ КАЖДОЙ КАРТОЧКИ    */
+/* ========================================== */
+
+/* КЛИПЫ: Левая колонка, занимает 1 и 2 строки в высоту */
+.item-clips {
+    grid-column: 1;
+    grid-row: 1 / 3;
+}
+
+/* ОБУЧЕНИЕ: Центр, 1 строка */
+.item-education {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+/* СЕРТИФИКАТ: Центр, 2 строка (встает ровно под обучением) */
+.item-certificate {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+/* РАБОТЫ: Правая колонка, занимает 1 и 2 строки в высоту */
+.item-portfolio {
+    grid-column: 3;
+    grid-row: 1 / 3;
+}
+
+/* ОТЗЫВЫ: Занимает 1 и 2 колонку в ширину на самой нижней (3-й) строке */
+.item-reviews {
+    grid-column: 1 / 3;
+    grid-row: 3;
+}
+
+/* КАРТА: Правый нижний угол, 3 колонка, 3 строка */
+.item-map {
+    grid-column: 3;
+    grid-row: 3;
+}
+
+/* ========================================== */
+/* АДАПТИВНОСТЬ                               */
+/* ========================================== */
+
+@media (max-width: 992px) {
+    .gallery-grid {
+        /* Переключаем на 2 колонки, авто-высота строк */
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+        gap: 20px;
+    }
+
+    /* Сбрасываем сложное позиционирование, чтобы плитка не ломалась на планшетах */
+    .gallery-item {
+        grid-column: auto !important;
+        grid-row: auto !important;
+        height: 220px; /* Фиксированная высота для аккуратного вида */
+    }
+}
+
+@media (max-width: 576px) {
+    .gallery-grid {
+        grid-template-columns: 1fr; /* В один столбец на смартфонах */
+        gap: 15px;
+    }
+    .gallery-item {
+        height: 180px;
+    }
+    .item-title {
+        font-size: 15px;
+        top: 15px;
+        left: 15px;
+    }
+}
+
+/* ========================================== */
+/* СТИЛИ ДЛЯ ПЯТОГО СЛАЙДА (СТОИМОСТЬ)        */
+/* ========================================== */
+
+.price-section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 60px 10%;
+    background-color: #FFFDF9;
+}
+
+/* Заголовок слайда */
+.price-header {
+    margin-bottom: 40px;
+}
+
+.price-title-tag {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 24px;
+    font-weight: 400;
+    color: #000;
+    border: 2px solid #E58BB1;
+    padding: 10px 50px;
+    border-radius: 50px;
+    letter-spacing: 1px;
+}
+
+/* Общий контейнер для двух услуг */
+.price-container {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 50px; /* Расстояние между блоками «Прическа» и «Макияж» */
+    flex-grow: 1;
+    justify-content: center;
+}
+
+/* Розовая горизонтальная строка-карточка */
+.price-card-row {
+    width: 100%;
+    background-color: #FBCADF; /* Нежно-розовый цвет плашки */
+    border-radius: 15px;
+    padding: 35px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+/* Текстовая часть внутри розовой карточки */
+.price-card-info {
+    font-family: 'Montserrat', sans-serif;
+    color: #000;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 60%;
+}
+
+.service-name {
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+}
+
+.service-cost-line {
+    display: flex;
+    gap: 60px; /* Зазор между словом СТОИМОСТЬ и цифрами */
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: 1px;
+}
+
+/* Контейнеры для фотографий справа */
+.price-card-img {
+    position: absolute;
+    right: 40px;
+    top: -20px; /* Смещение вверх, чтобы фото вылезало за рамки */
+    width: 200px;
+    height: 240px;
+}
+
+.price-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+
+
+/* Нижний блок текста */
+.price-footer {
+    margin-top: 50px;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    color: #000;
+}
+
+.price-footer p {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+}
+
+/* ========================================== */
+/* АДПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ        */
+/* ========================================== */
+
+@media (max-width: 850px) {
+    .price-card-row {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 30px;
+        gap: 30px;
+    }
+
+    .price-card-info {
+        width: 100%;
+        gap: 20px;
+    }
+
+    .service-name {
+        font-size: 24px;
+    }
+
+    .service-cost-line {
+        font-size: 18px;
+        gap: 30px;
+    }
+
+    /* На планшетах и телефонах убираем сильное наложение картинок, возвращаем в поток */
+    .price-card-img {
+        position: relative;
+        right: 0 !important;
+        top: 0 !important;
+        transform: none !important; /* Убираем наклон для читаемости */
+        width: 100%;
+        height: 200px;
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .price-section {
+        padding: 40px 15px;
+    }
+
+    .price-title-tag {
+        font-size: 18px;
+        padding: 8px 30px;
+    }
+
+    .price-container {
+        gap: 30px;
+    }
+
+    .price-footer p {
+        font-size: 14px;
+    }
+}
+/* ========================================== */
+/* ТОЧНЫЙ МАСШТАБ ДЛЯ ШЕСТОГО СЛАЙДА          */
+/* ========================================== */
+
+
+.delivery-section {
+    min-height: 100vh;
+    background-color: #FFFDF9;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 60px 12% 80px 12%;
+    box-sizing: border-box;
+}
+
+/* Верхняя строка: стрелка и заголовок */
+.delivery-header-layout {
+    width: 100%;
+    max-width: 1050px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 40px;
+}
+
+.arrow-container {
+    width: 45%;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.delivery-arrow {
+    height: 70px;
+    object-fit: contain;
+}
+
+.delivery-main-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: #000;
+    letter-spacing: 2px;
+    margin-left: 20px;
+}
+
+/* Сетка карточек */
+.delivery-grid-layout {
+    width: 100%;
+    max-width: 1050px;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Ровно 50% на 50% как на фото */
+    gap: 60px; /* Большой зазор между левым и правым блоком */
+    align-items: stretch;
+}
+
+/* ЛЕВАЯ КОЛОНКА */
+.delivery-left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 50px; /* Большой промежуток между карточками городов */
+}
+
+.city-card {
+    background-color: #FBCADF;
+    border-radius: 6px; /* Легкое скругление по фото */
+    padding: 40px 45px;
+    display: flex;
+    flex-direction: column;
+    gap: 45px; /* Дистанция между названием и ценой */
+}
+
+.city-name-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 26px;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    color: #000;
+}
+
+.city-price-info {
+    display: flex;
+    justify-content: space-between; /* Ровный разнос по краям как на фото */
+    width: 100%;
+    max-width: 320px; /* Ограничиваем ширину строки цены для точного масштаба */
+}
+
+.price-label-text, .price-value-text {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    color: #000;
+}
+
+/* ПРАВАЯ КОЛОНКА */
+.early-card-wrapper {
+    position: relative;
+    height: 100%;
+}
+
+.early-card-body {
+    background-color: #FBCADF;
+    height: 100%;
+    border-radius: 6px;
+    padding: 50px 45px 40px 45px;
+    display: flex;
+    flex-direction: column;
+
+    /* Точный круглый срез под солнце */
+    mask-image: radial-gradient(circle at 100% 0%, transparent 95px, black 96px);
+    -webkit-mask-image: radial-gradient(circle at 100% 0%, transparent 95px, black 96px);
+}
+
+/* Иконка солнца поверх среза */
+.sun-icon-box {
+    position: absolute;
+    top: -55px;
+    right: -55px;
+    width: 190px;
+    height: 190px;
+    z-index: 5;
+}
+
+.sun-icon-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Элементы правой карточки сверху вниз */
+.early-main-heading {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 1.3;
+    letter-spacing: 1.5px;
+    color: #000;
+    margin-bottom: 60px; /* Отступ вниз */
+}
+
+.early-time-badge {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    align-self: flex-end; /* Сдвиг вправо */
+    margin-bottom: 50px;
+}
+
+.early-price-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    margin-bottom: 40px;
+}
+
+.early-price-value {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    align-self: flex-end; /* Сдвиг цены вправо */
+}
+
+/* ========================================== */
+/* АДАПТИВНОСТЬ                               */
+/* ========================================== */
+
+@media (max-width: 992px) {
+    .delivery-section {
+        padding: 40px 20px;
+    }
+
+    .delivery-header-layout {
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .arrow-container {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .delivery-grid-layout {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .delivery-left-column {
+        gap: 25px;
+    }
+
+    .early-card-body {
+        mask-image: none;
+        -webkit-mask-image: none;
+        padding: 35px;
+    }
+
+    .early-main-heading { margin-bottom: 30px; }
+    .early-time-badge { margin-bottom: 30px; }
+    .early-price-label { margin-bottom: 20px; }
+
+    .sun-icon-box {
+        width: 120px;
+        height: 120px;
+        top: -25px;
+        right: -25px;
+    }
+
+    .city-name-title, .early-main-heading { font-size: 22px; }
+    .price-label-text, .price-value-text, .early-time-badge, .early-price-label, .early-price-value { font-size: 18px; }
+}
+
+/* ========================================== */
+/* СТИЛИ ДЛЯ СЛАЙДА 7 (КОНТАКТЫ)              */
+/* ========================================== */
+/* ==========================================================================
+   ИСПРАВЛЕННЫЙ СЛАЙД КОНТАКТОВ
+   ========================================================================== */
+.contacts-slide {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    padding: 60px 20px;
+    background-color: #ffffff;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Шапка контактов */
+.contacts-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.contacts-title {
+    font-size: 1.8rem;
+    font-weight: 400;
+    letter-spacing: 2px;
+    margin-bottom: 25px;
+    color: #1a1a1a;
+}
+
+.contacts-desc {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    letter-spacing: 1px;
+    color: #1a1a1a;
+}
+
+.contacts-accent-call {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #e066a6; /* Фирменный розовый цвет */
+    letter-spacing: 2px;
+    margin: 12px 0;
+}
+
+/* Главный контейнер для списка контактов */
+.contacts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;              /* Расстояние между блоком ВК и блоком Телефона */
+    max-width: 450px;
+    width: 100%;
+}
+
+/* Элемент контакта (строка) */
+.contact-item {
+    display: flex;
+    align-items: center;    /* Выравнивание иконки и текста по одной линии */
+    gap: 25px;              /* Отступ между иконкой и текстовым блоком */
+    text-decoration: none;  /* Убираем подчеркивание у ссылки */
+    color: inherit;
+    padding: 10px;
+    transition: transform 0.2s ease;
+}
+
+.contact-item:hover {
+    transform: translateX(5px); /* Легкий интерактивный сдвиг при наведении */
+}
+
+/* Круглый контейнер под иконку */
+.contact-icon-box {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #fff1f6; /* Нежно-розовая подложка под иконку */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Иконки внутри круга */
+.contact-svg {
+    width: 24px;
+    height: 24px;
+    fill: #e066a6; /* Окрашиваем иконку в ваш розовый цвет */
+}
+
+/* Текстовая область контакта */
+.contact-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Подпись над контактом (маленькая серая) */
+.contact-label {
+    font-size: 0.85rem;
+    color: #8c8c8c;
+    letter-spacing: 1px;
+}
+
+/* Сам контактный текст */
+.contact-value {
+    font-size: 1.1rem;
+    line-height: 1.4;
+    letter-spacing: 0.5px;
+    color: #e066a6;
+    font-weight: 400;
+}
+
+/* Текст ВК делаем чуть более структурированным */
+.highlight-vk {
+    font-weight: 400;
+}
+
+/* Адаптивность для небольших экранов */
+@media (max-width: 480px) {
+    .contacts-title { font-size: 1.5rem; }
+    .contacts-desc { font-size: 0.95rem; }
+    .contact-value { font-size: 1rem; }
+    .contact-item { gap: 15px; }
+}
+
+.contacts-section {
+    min-height: 100vh;
+    background-color: #FFFDF9;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 80px 0;
+    box-sizing: border-box;
+}
+
+/* Верхний блок с вопросами */
+.contacts-questions {
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    color: #000;
+    margin-bottom: 60px; /* Отступ до блока контактов */
+    width: 100%;
+}
+
+.questions-title {
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    margin-bottom: 25px;
+}
+
+.questions-text {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.6;
+    letter-spacing: 1px;
+}
+
+.pink-highlight {
+    color: #E58BB1; /* Ярко-розовый акцент из макета */
+    font-weight: 400;
+}
+
+/* Нижний блок разметки контактов */
+.contacts-info-layout {
+    width: 100%;
+    max-width: 900px; /* Строгое выравнивание краев по сетке сайта */
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr; /* Левая часть под контакты, правая под стрелку */
+    align-items: center;
+    position: relative;
+}
+
+/* Список контактов */
+.contacts-links {
+    display: flex;
+    flex-direction: column;
+    gap: 45px; /* Дистанция между ВК и Телефоном */
+    padding-left: 15%; /* Смещение контента к центру как на фото */
+}
+
+.contact-row {
+    display: flex;
+    align-items: center;
+    gap: 30px; /* Зазор между иконкой и текстом */
+    text-decoration: none;
+    color: #000;
+}
+
+/* Стилизация блока ВКонтакте */
+.icon-vk-box {
+    width: 65px;
+    height: 65px;
+    object-fit: contain;
+}
+
+.contact-text-block {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.contact-name {
+    font-size: 24px;
+    font-weight: 400;
+    color: #E58BB1;
+    letter-spacing: 1px;
+}
+
+.contact-sub {
+    font-size: 22px;
+    font-weight: 400;
+    color: #E58BB1;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+/* Стилизация блока Телефона */
+.row-phone {
+    margin-left: 5px; /* Коррекция выравнивания иконки телефона */
+}
+
+.icon-phone-img {
+    width: 55px;
+    height: 55px;
+    object-fit: contain;
+}
+
+.contact-phone-number {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: #E58BB1;
+    letter-spacing: 1px;
+}
+
+/* Правая часть: Декоративная стрелка */
+.contacts-decor {
+    display: flex;
+    justify-content: flex-end;
+    height: 100%;
+}
+
+.bg-contacts-arrow {
+    height: 280px; /* Масштаб закругленной стрелки */
+    object-fit: contain;
+    transform: translateY(-20px);
+}
+
+/* ========================================== */
+/* АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ ЭКРАНОВ        */
+/* ========================================== */
+
+@media (max-width: 992px) {
+    .contacts-info-layout {
+        grid-template-columns: 1fr; /* На смартфонах выстраиваем в один ряд */
+        gap: 40px;
+    }
+
+    .contacts-links {
+        padding-left: 0;
+        align-items: center; /* Центрируем иконки и текст */
+    }
+
+    .contact-text-block {
+        text-align: center;
+    }
+
+    .contacts-decor {
+        display: none; /* Скрываем большую боковую стрелку на мобильных телефонах */
+    }
+
+    .questions-text { font-size: 16px; }
+    .contact-name, .contact-sub, .contact-phone-number { font-size: 18px; }
+    .icon-vk-box, .icon-phone-img { width: 50px; height: 50px; }
+}
+
+
+/* ==========================================================================
+   СЛАЙД 8: ОБУЧЕНИЕ ДЛЯ СЕБЯ (ТОЧНО ПО МАКЕТУ)
+   ========================================================================== */
+/* ==========================================================================
+   СЛАЙД: ОБУЧЕНИЕ ДЛЯ СЕБЯ
+   ========================================================================== */
+.education-section * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.education-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    padding: 60px 40px;
+    background-color: #ffffff;
+    font-family: 'Montserrat', sans-serif;
+    position: relative;
+}
+
+/* Главный заголовок слайда (Розовый) */
+.education-title {
+    color: #E58BB1;
+    font-size: 2rem;
+    font-weight: 400;
+    letter-spacing: 2px;
+    margin-bottom: 60px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+/* Контейнер для двух колонок */
+.education-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    flex-grow: 1; /* Позволяет контенту прижать футер к низу */
+    gap: 50px;
+}
+
+/* --- ЛЕВАЯ КОЛОНКА: ТЕКСТ --- */
+.education-info {
+    flex: 1;
+    max-width: 500px;
+}
+
+.info-heading {
+    font-size: 1.2rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    margin-bottom: 30px;
+    color: #1a1a1a;
+}
+
+.info-list {
+    list-style: none; /* Убираем стандартные точки списков */
+    display: flex;
+    flex-direction: column;
+    gap: 25px; /* Отступы между пунктами */
+}
+
+.info-list li {
+    font-size: 1.05rem;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+    color: #1a1a1a;
+}
+
+/* --- ПРАВАЯ КОЛОНКА: ГАЛЕРЕЯ КАРТОЧЕК --- */
+.education-gallery {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 40px; /* Отступ между первой и второй парой До/После */
+    align-items: flex-end; /* Прижимает сетку к правому краю */
+}
+
+/* Горизонтальный ряд: До -> Стрелочка -> После */
+.gallery-pair {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Расстояние между карточками и стрелкой */
+}
+
+/* Стиль одной карточки */
+.card {
+    position: relative;
+    width: 180px;  /* Пропорциональная ширина карточки из макета */
+    height: 240px; /* Пропорциональная высота */
+    background-color: #f5f5f5; /* Серый фон-заглушка, пока нет картинок */
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Маленькие текстовые подписи "До" и "После" поверх фото */
+.card-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #1a1a1a;
+    background-color: rgba(255, 255, 255, 0.85); /* Полупрозрачная подложка */
+    padding: 3px 10px;
+    border-radius: 2px;
+    letter-spacing: 0.5px;
+}
+
+/* Иконка стрелочки между карточками */
+.gallery-arrow {
+    width: 30px;
+    height: auto;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+/* --- ПОДВАЛ СЛАЙДА --- */
+.education-footer {
+    width: 100%;
+    text-align: center;
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.education-footer p {
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    color: #1a1a1a;
+    font-weight: 400;
+}
+
+/* --- АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ --- */
+@media (max-width: 992px) {
+    .education-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
+    }
+    .education-info, .education-gallery {
+        max-width: 100%;
+        align-items: center;
+        text-align: center;
+    }
+    .education-gallery {
+        align-items: center;
+    }
+    .info-list {
+        align-items: center;
+    }
+}
+/* ==========================================================================
+   СЛАЙД 8: ОБУЧЕНИЕ ДЛЯ СЕБЯ (ТОЧНО ПО МАКЕТУ)
+   ========================================================================== */
+/* ==========================================================================
+   СЛАЙД 8: ОБУЧЕНИЕ ДЛЯ СЕБЯ (ТОЧНО ПО МАКЕТУ)
+   ========================================================================== */
+.education-section * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.education-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    padding: 40px 60px 60px 60px;
+    background-color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Подберите ваш шрифт */
+    position: relative;
+}
+
+/* Заголовок слайда с линией */
+.education-title {
+    color: #E58BB1;
+    font-size: 2rem;
+    font-weight: 400;
+    letter-spacing: 2px;
+    margin-bottom: 50px;
+    text-align: center;
+    position: relative;
+    display: inline-block;
+}
+
+/* Розовое двойное подчеркивание заголовка */
+.title-underline {
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    border-bottom: 2px solid #E58BB1;
+    display: block;
+}
+
+/* Главная сетка */
+.education-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex-grow: 1;
+    gap: 40px;
+}
+
+/* Левая и правая колонки */
+.education-left, .education-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* --- СПИСОК УРОКА --- */
+.education-info {
+    margin-bottom: 40px;
+}
+
+.info-heading {
+    font-size: 1.2rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    margin-bottom: 25px;
+    color: #1a1a1a;
+}
+
+.info-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.info-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 1.1rem;
+    line-height: 1.4;
+    color: #1a1a1a;
+}
+
+/* Розовые сердечки вместо точек */
+.heart-bullet {
+    color: #E58BB1;
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+/* --- КАРТОЧКИ ФОТО --- */
+.work-pair {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.images-row {
+    display: flex;
+    gap: 30px;
+}
+
+.img-box {
+    width: 190px;
+    height: 250px;
+    background-color: #eaeaea; /* Заглушка */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    overflow: hidden;
+}
+
+.img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Специфичные сдвиги картинок как на макете */
+.pair-one {
+    align-self: flex-start;
+    padding-top: 40px; /* Место для надписи "до" */
+}
+
+.pair-two {
+    align-self: flex-end;
+    align-items: flex-end;
+}
+
+/* --- РУКОПИСНЫЕ НАДПИСИ "до" и "после" --- */
+.handwritten-label {
+    font-family: 'Playfair Display', Georgia, serif; /* Можно подключить рукописный шрифт вроде 'Caveat' */
+    font-size: 3.5rem;
+    color: #E58BB1;
+    position: absolute;
+    z-index: 5;
+}
+
+/* Позиция надписи "до" */
+.label-before-one {
+    top: -30px;
+    left: 80px;
+    transform: rotate(-10deg);
+}
+
+/* Позиция надписи "после" */
+.label-after-two {
+    bottom: 0px;
+    left: -60px;
+    transform: rotate(-10deg);
+}
+
+/* --- ФУТЕР (ТЕКСТ СПРАВА ВНИЗУ) --- */
+.education-footer {
+    text-align: right;
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-self: flex-end;
+}
+
+.education-footer p {
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    color: #1a1a1a;
+    font-weight: 400;
+}
+
+/* Адаптивность для небольших экранов */
+@media (max-width: 992px) {
+    .education-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .education-left, .education-right {
+        width: 100%;
+        align-items: center;
+    }
+    .pair-one, .pair-two {
+        align-self: center;
+        align-items: center;
+        margin-bottom: 50px;
+    }
+    .education-footer {
+        text-align: center;
+        align-self: center;
+    }
+    .label-after-two {
+        left: auto;
+        right: -30px;
+    }
+}
+
+
+
+/* ========================================== */
+/* СТИЛИ ДЛЯ СЛАЙДА: ПОДАРОЧНЫЙ СЕРТИФИКАТ     */
+/* ========================================== */
+
+.certificate-section {
+    min-height: 100vh;
+    background-color: #FFFDF9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 80px 0;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Главная сетка, выровненная по общей оси 900px */
+.certificate-grid {
+    width: 100%;
+    max-width: 900px;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr; /* Левая часть под текст шире, чем правая под фото */
+    gap: 50px;
+    align-items: center;
+    z-index: 2; /* Контент поверх цветочков */
+}
+
+/* ЛЕВАЯ КОЛОНКА: Текст */
+.certificate-text-block {
+    font-family: 'Montserrat', sans-serif;
+    color: #000;
+    display: flex;
+    flex-direction: column;
+    gap: 30px; /* Фиксированные отступы между абзацами */
+}
+
+.certificate-main-title {
+    font-size: 26px;
+    font-weight: 400;
+    color: #E58BB1; /* Розовый акцентный заголовок */
+    letter-spacing: 1px;
+}
+
+.certificate-paragraph {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+}
+
+/* Специфические розовые выделения текста по макету */
+.pink-bold {
+    color: #E58BB1;
+    font-weight: 500; /* Выделение важной фразы */
+}
+
+.pink-regular {
+    color: #E58BB1;
+}
+
+.font-spacing {
+    letter-spacing: 1px;
+}
+
+/* ПРАВАЯ КОЛОНКА: Картинка */
+.certificate-image-block {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.cert-main-img {
+    width: 100%;
+    max-width: 420px; /* Ограничение размера картинки */
+    height: auto;
+    object-fit: contain;
+}
+
+/* ========================================== */
+/* АБСОЛЮТНОЕ ПОЗИЦИОНИРОВАНИЕ ЦВЕТОЧКОВ      */
+/* ========================================== */
+
+.flower-icon {
+    position: absolute;
+    height: 120px; /* Размер декоративных цветочков */
+    object-fit: contain;
+    opacity: 0.9;
+    z-index: 1; /* Фон под текстом */
+    pointer-events: none;
+}
+
+/* Верхний центральный цветок */
+.flower-top-center {
+    top: 40px;
+    left: 42%;
+    height: 130px;
+}
+
+/* Нижний левый цветок */
+.flower-bottom-left {
+    bottom: 40px;
+    left: 20%;
+}
+
+/* Нижний правый цветок */
+.flower-bottom-right {
+    bottom: 30px;
+    right: 25%;
+    height: 140px;
+}
+
+/* ========================================== */
+/* МОБИЛЬНАЯ АДАПТАЦИЯ                        */
+/* ========================================== */
+
+@media (max-width: 900px) {
+    .certificate-section {
+        padding: 60px 20px;
+    }
+
+    .certificate-grid {
+        grid-template-columns: 1fr; /* Перестраиваем в одну колонку на смартфонах */
+        gap: 40px;
+        text-align: center;
+    }
+
+    .certificate-image-block {
+        justify-content: center;
+    }
+
+    .cert-main-img {
+        max-width: 300px;
+    }
+
+    /* Прячем или уменьшаем декор на мобильных, чтобы не перекрывать текст */
+    .flower-icon {
+        height: 70px;
+    }
+    .flower-top-center { top: 15px; left: 10%; }
+    .flower-bottom-left { bottom: 15px; left: 5%; }
+    .flower-bottom-right { bottom: 15px; right: 5%; }
+
+    .certificate-main-title { font-size: 22px; }
+    .certificate-paragraph { font-size: 16px; }
+}
+
+/* ========================================== */
+/* СТИЛИ ДЛЯ СЛАЙДА: ПОРТФОЛИО / РАБОТЫ       */
+/* ========================================== */
+/* ==========================================================================
+   СЛАЙД ПОРТФОЛИО: КАРУСЕЛЬ С ЦЕНТРАЛЬНЫМ ФОКУСОМ
+   ========================================================================== */
+.portfolio-carousel-section {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding-top: 40px;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Окно для отображения 3-х карточек портфолио */
+.portfolio-container-window {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    padding: 20px;
+}
+
+/* Главный горизонтальный ряд для фотографий */
+.portfolio-carousel-lane {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+}
+
+/* Карточка одной фотографии портфолио */
+.portfolio-carousel-item {
+    width: 260px;
+    height: 460px;
+    background-color: #f7d6e0; /* Розовый фон-заглушка, пока нет картинок */
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    flex-shrink: 0;
+    transition: all 0.4s ease;
+    opacity: 0.5; /* Боковые фотографии изначально приглушены */
+}
+
+.portfolio-carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Прячем все фотографии, начиная с 4-й */
+.portfolio-carousel-item:nth-child(n+4) {
+    display: none !important;
+}
+
+/* ЦЕНТРАЛЬНОЕ ФОТО (Второе по счету в активном ряду) — делаем самым крупным */
+.portfolio-carousel-item:nth-child(2) {
+    width: 330px;
+    height: 560px;
+    opacity: 1; /* Полная яркость главного фото */
+    z-index: 5;
+    box-shadow: 0 15px 35px rgba(224, 102, 166, 0.2);
+}
+
+/* Первая и третья карточки (боковые) */
+.portfolio-carousel-item:nth-child(1),
+.portfolio-carousel-item:nth-child(3) {
+    opacity: 0.8;
+    z-index: 2;
+}
+
+/* --------------------------------------------------------------------------
+   НИЖНЯЯ ПАНЕЛЬ ПОРТФОЛИО: СТРЕЛКИ И ТЕКСТ
+   -------------------------------------------------------------------------- */
+.portfolio-bottom-panel {
+    width: 100%;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 30px;
+}
+
+.portfolio-controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+}
+
+/* Текст заголовка ПОРТФОЛИО */
+.portfolio-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 400;
+    letter-spacing: 4px;
+    color: #1a1a1a;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+/* Кнопки-стрелки */
+.portfolio-arrow {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #e066a6; /* Розовый цвет стрелочек */
+    font-size: 3rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.portfolio-arrow:hover {
+    transform: scale(1.2);
+}
+
+/* Адаптация под мобильные экраны (оставляем только 1 главное фото) */
+@media (max-width: 768px) {
+    .portfolio-carousel-lane {
+        gap: 0;
+    }
+    .portfolio-carousel-item:nth-child(1),
+    .portfolio-carousel-item:nth-child(3) {
+        display: none !important;
+    }
+    .portfolio-carousel-item:nth-child(2) {
+        width: 260px;
+        height: 460px;
+    }
+    .portfolio-controls-row {
+        gap: 25px;
+    }
+    .portfolio-heading {
+        font-size: 1.6rem;
+    }
+}
+
+
+/* ========================================== */
+/* СТИЛИ ДЛЯ СЛАЙДА: ОТЗЫВЫ                   */
+/* ========================================== */
+
+.reviews-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    padding: 60px 40px 100px 40px;
+    background-color: #ffffff;
+    font-family: 'Montserrat', sans-serif;
+    position: relative;
+    box-sizing: border-box;
+}
+
+/* Заголовок в розовом овале */
+.reviews-title-wrapper {
+    border: 3px solid #E58BB1;
+    border-radius: 100px;
+    padding: 12px 65px;
+    margin-bottom: 70px;
+    display: inline-block;
+}
+
+.reviews-main-title {
+    color: #000000;
+    font-size: 2.2rem;
+    font-weight: 400;
+    letter-spacing: 4px;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+/* Сетка из 3-х колонок */
+.reviews-masonry-grid {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 45px;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.reviews-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 55px;
+}
+
+/* ИСПРАВЛЕННЫЙ ПРЯМОУГОЛЬНИК (Теперь он имеет видимые границы и размеры) */
+.review-box {
+    width: 100%;
+    max-width: 340px;
+    background-color: #fffafc;     /* Очень нежный розово-белый фон прямоугольника */
+    border: 1px solid #f2cfdf;     /* Тонкая розовая рамка границ */
+    border-radius: 18px;           /* Красивые скругленные края как в макете */
+    box-shadow: 0 10px 25px rgba(229, 139, 177, 0.08); /* Розовая мягкая тень */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.review-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(229, 139, 177, 0.15);
+}
+
+/* РАЗНЫЕ РАЗМЕРЫ ДЛЯ ПРЯМОУГОЛЬНИКОВ ИЗ МАКЕТА */
+.short-box {
+    height: 250px; /* Короткий прямоугольник */
+}
+
+.medium-box {
+    height: 360px; /* Средний прямоугольник */
+}
+
+.long-box {
+    height: 450px; /* Длинный прямоугольник под развернутые отзывы */
+}
+
+/* Серый временный текст по центру прямоугольника */
+.placeholder-text {
+    color: #bfaab5;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+/* Правильные пропорции для картинок отзывов внутри рамок */
+.review-img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover; /* Картинка аккуратно заполнит весь прямоугольник без искажений */
+}
+
+
+/* ==========================================================================
+   НЕВЫРАВНЕННОСТЬ И ШАХМАТНЫЕ СДВИГИ КОЛОНОК
+   ========================================================================== */
+.col-left {
+    padding-top: 10px;
+}
+.item-2 { margin-top: 15px; }
+
+.col-center {
+    padding-top: 110px; /* Опускаем центральную колонку ниже */
+}
+.item-4 { margin-top: 20px; }
+
+.col-right {
+    padding-top: 55px; /* Промежуточный сдвиг правой колонки */
+}
+.item-6 { margin-top: 25px; }
+
+/* АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ */
+@media (max-width: 992px) {
+    .reviews-masonry-grid {
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+    }
+    .reviews-col {
+        width: 100%;
+        max-width: 340px;
+        gap: 30px;
+        padding-top: 0 !important;
+    }
+    .item-2, .item-4, .item-6 {
+        margin-top: 0 !important;
+    }
+    .review-box {
+        height: 280px !important; /* На телефонах делаем прямоугольники одинаковыми */
+    }
+}
+
+/* ========================================== */
+/* СТИЛИ ДЛЯ СЛАЙДА: КЛИПЫ                    */
+/* ========================================== */
+/* ==========================================================================
+   СЛАЙД КЛИПЫ (ЧИСТЫЙ ВАРИАНТ БЕЗ ВОЛНЫ)
+   ========================================================================== */
+/* Правильное отображение видеороликов целиком без обрезки */
+.clip-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* ИСПРАВЛЕНО: видео сжимается так, чтобы полностью влезть в карточку */
+    display: block;
+    background-color: #000000; /* Добавляем черный (или любой другой) фон для пустых полей, если пропорции видео и карточки не совпадают */
+}
+
+.clips-section {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding-top: 40px;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Окно для отображения 3-х карточек */
+.clips-container-window {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    padding: 20px;
+}
+
+/* Главный горизонтальный контейнер для клипов */
+.clips-carousel {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+}
+
+/* Карточка одного клипа */
+.clip-item {
+    width: 260px;
+    height: 460px;
+    background-color: #f7d6e0; /* Розовый фон-заглушка */
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    flex-shrink: 0;
+    transition: all 0.4s ease;
+    opacity: 0.5; /* Боковые клипы приглушены */
+}
+
+.clip-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Прячем все клипы, начиная с 4-го */
+.clip-item:nth-child(n+4) {
+    display: none !important;
+}
+
+/* ЦЕНТРАЛЬНЫЙ КЛИП (Второй по счету в ряду) — делаем самым крупным */
+.clip-item:nth-child(2) {
+    width: 330px;
+    height: 560px;
+    opacity: 1;
+    z-index: 5;
+    box-shadow: 0 15px 35px rgba(224, 102, 166, 0.2);
+}
+
+/* Первый и третий (боковые) */
+.clip-item:nth-child(1),
+.clip-item:nth-child(3) {
+    opacity: 0.8;
+    z-index: 2;
+}
+
+/* --------------------------------------------------------------------------
+   НИЖНЯЯ ПАНЕЛЬ: ТОЛЬКО СТРЕЛКИ И ТЕКСТ
+   -------------------------------------------------------------------------- */
+.clips-bottom-panel {
+    width: 100%;
+    height: 100px; /* Уменьшили высоту, так как волны больше нет */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 30px;
+}
+
+/* Строка управления */
+.clips-controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+}
+
+/* Текст заголовка */
+.clips-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 400;
+    letter-spacing: 4px;
+    color: #1a1a1a;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+/* Кнопки-стрелки */
+.clip-arrow {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #e066a6; /* Розовый цвет стрелочек */
+    font-size: 3rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.clip-arrow:hover {
+    transform: scale(1.2);
+}
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+    .clips-carousel {
+        gap: 0;
+    }
+    .clip-item:nth-child(1),
+    .clip-item:nth-child(3) {
+        display: none !important;
+    }
+    .clip-item:nth-child(2) {
+        width: 260px;
+        height: 460px;
+    }
+    .clips-controls-row {
+        gap: 25px;
+    }
+    .clips-heading {
+        font-size: 1.6rem;
+    }
+}
+
+
+/* ========================================== */
+/* СТИЛИ ДЛЯ СЛАЙДА: МОЯ СТУДИЯ (КАРТА)       */
+/* ========================================== */
+.slide-13 {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: 60px;
+    position: relative;
+}
+
+.slide-header {
+    text-align: center;
+    margin-bottom: 40px; /* Немного уменьшили отступ шапки */
+}
+
+.main-title {
+    color: #E58BB1;
+    font-size: 2rem;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+}
+
+.content-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Центрируем левый текст и правый квадрат по вертикали */
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 20px;
+    /* Убрали flex-grow, чтобы контент не растягивал слайд искусственно вниз */
+}
+
+.info-block {
+    flex: 1;
+    max-width: 450px;
+}
+
+.desc-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.accent-box {
+    display: block;
+    margin-top: 20px;
+}
+
+.accent-text {
+    font-size: 1.1rem;
+    line-height: 1.5;
+}
+
+.highlight {
+    color: #e066a6;
+    border-bottom: 1px solid #e066a6;
+}
+
+.map-block {
+    flex: 1;
+    max-width: 500px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end; /* Смещаем квадрат к правому краю */
+}
+
+/* ИСПРАВЛЕНО: ТЕПЕРЬ ЭТО ИДЕАЛЬНЫЙ ВИДИМЫЙ КВАДРАТ С СЕЙФОМ ПОД ФОТО */
+.map-wrapper {
+    width: 380px;                  /* Четкая фиксированная ширина */
+    height: 380px;                 /* Такая же высота для формы квадрата */
+    background-color: #fffafc;     /* Нежный розово-белый фон заглушки */
+    border: 1px solid #f2cfdf;     /* Тонкая розовая рамка границ */
+    border-radius: 18px;           /* Красивые скругленные края */
+    box-shadow: 0 10px 25px rgba(229, 139, 177, 0.08); /* Мягкая розовая тень */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Стили для будущего фото карты внутри квадрата */
+.map-wrapper img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+/* Делает всю область ссылки кликабельной и убирает синее подчёркивание */
+.studio-map-link {
+    text-decoration: none !important;
+    display: block;
+    width: auto; /* Авто-подстройка под размер квадрата */
+}
+
+/* ИСПРАВЛЕНО: ПОДНЯЛИ ЛИНИЮ НАВЕРХ И УБРАЛИ ЛИШНИЕ ПУСТОТЫ */
+.slide-footer {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-top: 40px;              /* Уменьшили верхний отступ, чтобы поднять линию выше */
+    border-top: 2px solid #f7d6e0;
+    padding: 25px 20px;
+    background-color: #fff9fb;
+}
+
+.footer-text {
+    max-width: 1100px;
+    margin: 0 auto;
+    text-align: right;
+    color: #b0a0a5;
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+/* ==========================================================================
+   АДАПТИВНОСТЬ ПОД МОБИЛЬНЫЕ УСТРОЙСТВА
+   ========================================================================== */
+@media (max-width: 768px) {
+    .hero-section {
+        flex-direction: column-reverse;
+        text-align: center;
+    }
+    .hero-image-container, .hero-text-container {
+        max-width: 100%;
+    }
+    .hero-text-container {
+        align-items: center;
+        margin-bottom: 30px;
+    }
+    .early-booking-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+    .content-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+    }
+    .info-block {
+        max-width: 100%;
+        text-align: center;
+        margin-bottom: 0px;
+    }
+    .map-block {
+        justify-content: center;
+    }
+    /* На мобильных телефонах пропорционально уменьшаем квадрат */
+    .map-wrapper {
+        width: 280px;
+        height: 280px;
+    }
+    .slide-footer {
+        margin-top: 30px;
+    }
+    .footer-text {
+        text-align: center;
+    }
+}
+/* ========================================== */
+/* ПАНЕЛЬ УПРАВЛЕНИЯ - ПОЛНАЯ ВЕРСИЯ */
+/* ========================================== */
+/* ========================================== */
+/* ПАНЕЛЬ УПРАВЛЕНИЯ - В СТИЛЕ САЙТА (РОЗОВАЯ) */
+/* ========================================== */
+.admin-panel {
+    background: #FBCADF;  /* Розовый фон как у карточек */
+    color: #1a1a1a;       /* Темный текст для читаемости */
+    padding: 25px;
+    border-radius: 15px;
+    margin: 20px auto;
+    max-width: 1200px;
+    box-shadow: 0 10px 30px rgba(229, 139, 177, 0.2);
+    border: 1px solid #E58BB1;
+    position: relative;
+    z-index: 100;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #E58BB1;
+}
+
+#userInfo {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1a1a1a;
+}
+
+.logout-btn {
+    background: #E58BB1;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.logout-btn:hover {
+    background: #d4729e;
+    transform: scale(1.02);
+}
+
+.admin-panel h3 {
+    margin: 20px 0 15px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.price-editor {
+    display: flex;
+    gap: 30px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    margin: 15px 0 25px 0;
+}
+
+.price-editor label {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14px;
+    color: #1a1a1a;
+}
+
+.price-input {
+    padding: 10px;
+    border: 1px solid #E58BB1;
+    border-radius: 8px;
+    font-size: 16px;
+    width: 150px;
+    background: white;
+}
+
+.save-btn {
+    background: #E58BB1;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.save-btn:hover {
+    background: #d4729e;
+    transform: scale(1.02);
+}
+
+.media-control-group {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 15px 0;
+}
+
+.media-input {
+    padding: 10px 15px;
+    border: 1px solid #E58BB1;
+    border-radius: 25px;
+    width: 250px;
+    font-size: 14px;
+    background: white;
+}
+
+.media-btn {
+    background: #E58BB1;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.media-btn:hover {
+    background: #d4729e;
+    transform: scale(1.02);
+}
+
+.media-list {
+    margin-top: 15px;
+    max-height: 200px;
+    overflow-y: auto;
+    background: rgba(229, 139, 177, 0.1);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.media-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(229, 139, 177, 0.15);
+    padding: 8px 15px;
+    margin: 5px 0;
+    border-radius: 8px;
+}
+
+.media-item span {
+    font-size: 14px;
+    color: #1a1a1a;
+}
+
+.delete-media-btn {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s;
+}
+
+.delete-media-btn:hover {
+    background: #ff5252;
+}
+
+.admin-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin: 15px 0;
+}
+
+.admin-btn {
+    background: #E58BB1;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.admin-btn:hover {
+    background: #d4729e;
+    transform: scale(1.02);
+}
+
+.admin-btn-danger {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.admin-btn-danger:hover {
+    background: #ff5252;
+    transform: scale(1.02);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .admin-panel {
+        padding: 15px;
+        margin: 10px;
+    }
+    .price-editor {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .price-editor label {
+        width: 100%;
+    }
+    .price-input {
+        width: 100%;
+    }
+    .media-control-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .media-input {
+        width: 100%;
+    }
+    .admin-buttons {
+        flex-direction: column;
+    }
+    .admin-btn, .admin-btn-danger {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* ==========================================================================
+   СТИЛИ ДЛЯ СТРАНИЦЫ ВХОДА
+   ========================================================================== */
+.login-container {
+    max-width: 450px;
+    margin: 100px auto;
+    padding: 50px 40px;
+    background: #ffffff;
+    border-radius: 30px;
+    box-shadow: 0 25px 50px rgba(229, 139, 177, 0.15);
+    text-align: center;
+    border: 1px solid #f2cfdf;
+}
+
+.login-container h2 {
+    margin-bottom: 35px;
+    color: #E58BB1;
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: 1px;
+}
+
+.login-container input,
+.login-container select {
+    width: 100%;
+    padding: 14px 18px;
+    margin: 12px 0;
+    border: 1.5px solid #f0d5e0;
+    border-radius: 50px;
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    background: #FFFDF9;
+    transition: all 0.3s;
+    outline: none;
+}
+
+.login-container input:focus,
+.login-container select:focus {
+    border-color: #E58BB1;
+    box-shadow: 0 0 0 3px rgba(229, 139, 177, 0.1);
+}
+
+.login-container button {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #E58BB1 0%, #d4729e 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 25px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.login-container button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(229, 139, 177, 0.3);
+}
+
